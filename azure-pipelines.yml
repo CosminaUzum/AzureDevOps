@@ -1,0 +1,31 @@
+# Docker
+# Build a Docker image
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+variables:
+  tag: '$(Build.BuildId)'
+
+stages:
+- stage: Build
+  displayName: Build image
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      - task: AzureContainerApps@1
+        inputs:
+          azureSubscription: 'PAYG Dev(453b394c-1408-4972-ae6c-0903662cd284)'
+          acrName: 'mydockerbin.azurecr.io'
+          dockerfilePath: '**/Dockerfile'
+          imageToBuild: 'mydockerbin.azurecr.io/weatherapi:1.0.0'
+          imageToDeploy: 'mydockerbin.azurecr.io/weatherapi:1.0.0'
+          containerAppName: 'tfcg_test'
+          resourceGroup: 'cfu_azpipetf'
